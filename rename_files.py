@@ -46,21 +46,20 @@ def rename_files_with_pattern(directory, old_pattern: str, new_pattern: str):
 
     try:
         filenames = os.listdir(directory)  # Get the list of files *once*
-        for filename in tqdm(filenames, desc="Renaming files"): # Use tqdm here
-            match = re.search(old_pattern, filename)  # Use re.search for pattern matching
-
-            # if no match just skip
-            # TODO: move match out of the loop, i.e., filter filenames
-            if match:
-                new_filename = re.sub(old_pattern, new_pattern, filename) # Use re.sub for replacement
-                if new_filename != filename: # Avoid renaming to same name
-                    old_filepath = os.path.join(directory, filename)
-                    new_filepath = os.path.join(directory, new_filename)
-                    try:
-                        os.rename(old_filepath, new_filepath)
-                        # print(f"Renamed '{filename}' to '{new_filename}'")
-                    except OSError as e:
-                        print(f"Error renaming '{filename}': {e}")
+        # Filter filenames *before* looping using list comprehension:
+        matching_filenames = [
+            filename for filename in filenames if re.search(old_pattern, filename)
+        ]
+        for filename in tqdm(matching_filenames, desc="Renaming files"): # Use tqdm here
+            new_filename = re.sub(old_pattern, new_pattern, filename) # Use re.sub for replacement
+            if new_filename != filename: # Avoid renaming to same name
+                old_filepath = os.path.join(directory, filename)
+                new_filepath = os.path.join(directory, new_filename)
+                try:
+                    os.rename(old_filepath, new_filepath)
+                    # print(f"Renamed '{filename}' to '{new_filename}'")
+                except OSError as e:
+                    print(f"Error renaming '{filename}': {e}")
 
 
     except FileNotFoundError:
