@@ -37,7 +37,13 @@ def check_dns_running(host_info, username: str = "root", certificate_path=None):
     Raises:
         N/A    
     """
-    host, port = host_info  # Unpack host and port
+    if isinstance(host_info, (tuple, list)):  # Check if it's a tuple/list (host, port)
+        host, port = host_info
+    elif isinstance(host_info, str):  # It's just a host (use default port 22)
+        host = host_info
+        port = 22  # Default SSH port
+    else:
+        return f"Invalid host info: {host_info}"
 
     try:
         client = paramiko.SSHClient()
@@ -88,7 +94,7 @@ def check_dns_running(host_info, username: str = "root", certificate_path=None):
 
 def main():
     hosts_with_ports  = [
-        ("192.168.112.2", 22222),  # ip_or_hostname1, ssh port
+        ("192.168.112.2", 22222),  # ip_or_hostname1, ssh port [optional]
         ("192.168.112.3", 22222),
         ("192.168.112.4", 22222),
         # ... more hosts
