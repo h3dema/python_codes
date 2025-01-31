@@ -6,6 +6,8 @@ import socket
 import concurrent.futures
 import re
 
+from utils import decode_host_info
+
 
 def check_dns_running(host_info, username: str = "root", certificate_path=None):
     """Checks if Bind DNS server is running on a host via SSH.
@@ -35,15 +37,9 @@ def check_dns_running(host_info, username: str = "root", certificate_path=None):
             - "{host_info}: Error: {error_message}" (for other errors)
 
     Raises:
-        N/A    
+        check decode_host_info()
     """
-    if isinstance(host_info, (tuple, list)):  # Check if it's a tuple/list (host, port)
-        host, port = host_info
-    elif isinstance(host_info, str):  # It's just a host (use default port 22)
-        host = host_info
-        port = 22  # Default SSH port
-    else:
-        return f"Invalid host info: {host_info}"
+    host, port = decode_host_info(host_info)
 
     try:
         client = paramiko.SSHClient()
