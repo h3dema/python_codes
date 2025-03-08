@@ -1,0 +1,34 @@
+#!/bin/bash
+# 
+# Troca a interface default em um Ubuntu: console ou gráfica.
+# **IMPORTANTE**: o script reinicia o computador ao terminar
+#
+
+if [ $# -eq 0 ]; then
+  echo "Error: No parameters provided."
+  exit 1
+fi
+
+case "$1" in
+  "-c")
+    # Switch to the command-line, non-graphical environment.
+    systemctl set-default multi-user.target
+    ;;
+
+  "-g")
+    # Switch to the graphical target
+    systemctl set-default graphical.target
+    ;;
+
+  *)
+    echo "Error: Invalid parameter. Usage:"
+    echo "$0 -c : switch to console"
+    echo "$0 -g : switch to graphical"
+    exit 1
+    ;;
+esac
+
+echo "Press Enter to reboot..."
+read -r input
+
+reboot
